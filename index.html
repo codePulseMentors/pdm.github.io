@@ -1,0 +1,270 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+
+    <style>
+        #block
+        {
+            /* background-color: skyblue; */
+            border:1px solid black;
+            height: 300px;
+        }
+        h3{
+            text-align: center;
+        }
+        table,th,td{
+                text-align: center;
+        }
+    </style>
+</head>
+<body>
+      <div class="row"> 
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6" id="block">
+
+                   <h3>Enter Record Here</h3>
+                   <hr>
+                   Enter Name
+                     <input type="text" id="txtName" class="form-control">
+                    Enter Amount
+                     <input type="text" id="txtAmount" class="form-control">
+                     <button onclick="save()" class="btn btn-success">Submit</button>
+                     <button onclick="delet()" class="btn btn-danger">Delete</button>
+                     <button onclick="upd()" class="btn btn-danger">update</button>
+                     <button onclick="show()" class="btn btn-danger">Open</button>
+                     <button onclick="display()" class="btn btn-danger">openFile</button>
+            </div>
+            <div class="col-sm-3"></div>
+      </div>    
+      <div class="row" style="margin-top:20px ;">
+          <div class="container">
+            <table class="table table-bordered">
+                <thead>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Edit/Delete</th>
+                </thead>
+
+                <tbody id="bdy">
+
+                </tbody>
+            </table>
+        </div>
+      </div>
+
+          
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+    
+      <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
+    
+      <!-- Add Firebase products that you want to use -->
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-storage.js"></script> 
+
+                   
+
+        <script>
+                
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA04gvnnPCOmaT6xyKFV9l0cIx54x4ehDE",
+            authDomain: "dbstorage-9bb00.firebaseapp.com",
+            projectId: "dbstorage-9bb00",
+            storageBucket: "dbstorage-9bb00.appspot.com",
+            messagingSenderId: "649746148209",
+            appId: "1:649746148209:web:7bdf7a9161290bead264d0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+
+          function display()
+          {
+           // 4 METHOD  
+            var request= new XMLHttpRequest();
+             request.open("GET","data\\record.json");
+//request.open("post","https://jsonplaceholder.typicode.com/albums");
+             request.send();
+
+             request.onload=function()
+             {  
+                  if(request.status==200)
+                  {
+                    console.log(request.response)
+                  }
+                  else{
+                      console.log("sorry")
+                  }
+
+             }
+          }
+   function show()
+   {
+    document.getElementById("bdy").innerHTML=""
+    firebase.database().ref('Registration').once("value",function(AllRecord){
+    //console.log(AllRecord)
+
+    AllRecord.forEach(function(snapshot){
+      //console.log(snapshot.val().Name+"-"+snapshot.val().Amount)
+      addItemOnTable(snapshot.val().Name,snapshot.val().Amount)
+   
+    })
+
+    })
+   }
+          function upd()
+          {
+  
+            name= document.getElementById("txtName").value     
+               amount= document.getElementById("txtAmount").value     
+           const obj={
+                    Name:name,
+                    Amount:amount
+                    }
+
+                    firebase.database().ref('/Registration/'+name).update(obj)
+                    alert("data updated")
+                    clean()
+          }
+          function delet()
+          {
+            name= document.getElementById("txtName").value     
+            firebase.database().ref('/Registration/'+name).remove();
+            alert("data delete") 
+            clean()
+          }
+            function save()
+            {
+               name= document.getElementById("txtName").value     
+               amount= document.getElementById("txtAmount").value     
+           const obj={
+                    Name:name,
+                    Amount:amount
+                    }
+
+                    firebase.database().ref('/Registration/'+name).set(obj)
+                    alert("data save")
+                    clean()
+                    show()
+                    
+               //    addItemOnTable(name,amount)
+               
+            }
+            function clean()
+            {
+                 document.getElementById("txtName").value =""
+                 document.getElementById("txtAmount").value=""     
+            }
+            function addItemOnTable(name,amount)
+            {
+              row=  document.createElement("tr")
+             
+              cell1= document.createElement("td")
+             cell2= document.createElement("td")
+             cell3= document.createElement("td")
+
+             // create span for name and amount
+             textName=  document.createElement("span")   
+             textAmount=  document.createElement("span")   
+
+             // create Edit text for name and amount
+
+             EditName=  document.createElement("input")   
+             EditAmount=  document.createElement("input")   
+
+                EditName.style.display="none"
+                EditAmount.style.display="none"
+             textName.innerHTML=name
+             textAmount.innerHTML=amount
+                 
+                    cell1.appendChild(textName)
+                    cell1.appendChild(EditName)
+
+                    cell2.appendChild(textAmount)
+                    cell2.appendChild(EditAmount)
+           
+             // create edit button 
+                   btnEdit= document.createElement("input")        
+                   btnEdit.setAttribute("value","Edit")
+                   btnEdit.setAttribute("type","button")
+                   btnEdit.setAttribute("onclick","edit(this)")
+
+        // create update button 
+                    btnUpdate= document.createElement("input")        
+                   btnUpdate.setAttribute("value","update")
+                   btnUpdate.setAttribute("type","button")
+                   btnUpdate.setAttribute("onclick","update(this)")
+                    btnUpdate.style.display="none"
+
+                
+
+           // create delete button 
+                   btnDelete= document.createElement("input")        
+                   btnDelete.setAttribute("value","delete")
+                   btnDelete.setAttribute("type","button")
+                   btnDelete.setAttribute("onclick","del(this)")
+
+                   cell3.appendChild(btnEdit)
+                   cell3.appendChild(btnUpdate)
+                   cell3.appendChild(btnDelete)
+
+                    
+                    
+                    row.appendChild(cell1)
+                    row.appendChild(cell2)
+                    row.appendChild(cell3)
+
+    document.getElementById("bdy").appendChild(row) 
+            }
+
+      function del(OButton)
+      {
+               // OButton.parentNode.parentNode.style.display="none"
+               row=OButton.parentNode.parentNode
+             name=  row.cells[0].childNodes[0].innerHTML;
+             firebase.database().ref('/Registration/'+name).remove();
+             show()     
+      }
+      function edit(OButton)
+      {
+             row=OButton.parentNode.parentNode
+             row.cells[0].childNodes[1].value=    row.cells[0].childNodes[0].innerHTML 
+            row.cells[0].childNodes[0].style.display="none"
+            row.cells[0].childNodes[1].style.display="block"
+
+
+
+        //hide edit button and show update button
+
+          row.cells[2].childNodes[0].style.display="none"
+          row.cells[2].childNodes[1].style.display="block"
+
+      }
+
+       function update(OButton)
+       {
+             row=OButton.parentNode.parentNode
+
+         row.cells[0].childNodes[0].innerHTML=    row.cells[0].childNodes[1].value
+             row.cells[0].childNodes[0].style.display="block"
+             row.cells[0].childNodes[1].style.display="none"
+
+             
+        //hide update button and show edit button
+
+          row.cells[2].childNodes[0].style.display="block"
+          row.cells[2].childNodes[1].style.display="none"
+       }
+
+        </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "Registration": {
+    "Ravi": {
+      "Amount": "1234",
+      "Name": "Ravi"
+    },
+    "anita": {
+      "Amount": "5678",
+      "Name": "anita"
+    },
+    "deepak jangra": {
+      "Amount": "4598",
+      "Name": "deepak jangra"
+    },
+    "vikki": {
+      "Amount": "9898",
+      "Name": "vikki"
+    }
+  }
+}
